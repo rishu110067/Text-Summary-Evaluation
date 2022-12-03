@@ -11,11 +11,8 @@
     <title> {% block title %} Add {% endblock title %} - Text Summarization </title>
     
     <style>
-        h2 {
-            padding-bottom: 1rem;
-        }
         .container {
-            margin: 2rem 5rem 20rem 2rem;
+            margin: 2rem 2rem 2rem 2rem;
             max-width: 80% !important; /*Set your own width %; */
             
         }
@@ -42,8 +39,39 @@
                 <label for="predicted_summary" class="form-label">Predicted Summary</label>
                 <input type="text" class="form-control" name="predicted_summary" value="{{predicted_summary}}" readonly>
             </div>
-            <button type="submit" class="btn btn-dark" name="submit" formaction="{{url_for('dashboard')}}">Save</button>
+            <button type="submit" class="btn btn-dark mb-3" name="submit" formaction="{{url_for('save_quick_summary')}}">Save</button>
         </form>
+    </div>
+
+    <div class="container">
+        <h2>Your Summaries</h2> 
+        {% if allQuickSummary|length == 0%}
+            <div class="alert alert-dark" role="alert">
+                No record
+            </div>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">SNo</th>
+                        <th scope="col">Text</th>
+                        <th scope="col">Predicted Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for quick_summary in allQuickSummary %}
+                        <tr>
+                            <th scope="row">{{loop.index}}</th>
+                            <td>{{quick_summary.text}}</td>
+                            <td>{{quick_summary.predicted_summary}}</td>
+                            <td>
+                                <a href="/quick_summary/delete/{{quick_summary.sno}}" type="button" class="btn btn-outline-dark btn-sm mx-2">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"

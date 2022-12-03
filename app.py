@@ -65,6 +65,17 @@ class TextSum(db.Model):
         return f"{self.sno} - {self.text}"
 
 
+class QuickSummary(db.Model):
+    sno = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(10000), nullable=False)
+    predicted_summary = db.Column(db.String(1000), nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    def __repr__(self) -> str:
+        return f"{self.sno} - {self.text}"
+
+
+
 # for getting BERT score 
 st_model = SentenceTransformer('all-MiniLM-L6-v2')
 def get_score(predicted_summary, actual_summary):
@@ -141,9 +152,36 @@ def quick_summary():
             predicted_summary = text
         else:
             predicted_summary = get_predicted_summary(text)
-        return render_template('quick_summary.html', text=text, predicted_summary=predicted_summary)
+        
+        allQuickSummary = QuickSummary.query.filter_by(user_id=current_user.id).all()
+        return render_template('quick_summary.html', text=text, predicted_summary=predicted_summary, allQuickSummary=allQuickSummary)
 
-    return render_template('quick_summary.html')
+    allQuickSummary = QuickSummary.query.filter_by(user_id=current_user.id).all()
+    return render_template('quick_summary.html', allQuickSummary=allQuickSummary)
+
+
+@app.route('/quick_summary/save', methods=['GET', 'POST'])
+@login_required
+def save_quick_summary():
+    text = request.form['text']
+    if len(text) <= 10:
+        predicted_summary = text
+    else:
+        predicted_summary = get_predicted_summary(text)
+    
+    quick_summary = QuickSummary(text=text, predicted_summary=predicted_summary, user_id=current_user.id)
+    db.session.add(quick_summary)
+    db.session.commit()
+    return redirect("/quick_summary")
+
+
+@app.route('/quick_summary/delete/<int:sno>')
+@login_required
+def delete_quick_summary(sno):
+    quick_summary = QuickSummary.query.filter_by(sno=sno).first()
+    db.session.delete(quick_summary)
+    db.session.commit()
+    return redirect("/quick_summary")
 
 
 @app.route('/textsum', methods=['GET', 'POST'])
