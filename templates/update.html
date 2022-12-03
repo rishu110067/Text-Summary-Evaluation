@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+    <title> {% block title %} Update {% endblock title %} - Text Summarization </title>
+    
+    <style>
+        .container {
+            margin: 2rem 5rem;
+            max-width: 80% !important; /*Set your own width %; */
+        }
+    </style>
+</head>
+
+<body>
+{% extends 'base2.html' %}
+{% block body %}
+
+    <div class="container">
+        <h2>Update Text Summarization</h2>
+        <form class="form" action="/textsum/update/{{textsum.sno}}" method="POST">
+            <div class="mb-3">
+                <label for="text" class="form-label">Text</label>
+                <textarea id="textarea1" class="form-control" rows="5" name="text">{{textsum.text}}</textarea>
+                <input type="hidden" class="form-control" name="text" value="textarea1">
+            </div>
+            <div class="mb-3">
+                <label for="actual_summary" class="form-label">Actual Summary</label>
+                <input type="text" class="form-control" name="actual_summary" value="{{textsum.actual_summary}}">
+            </div>
+            <div class="mb-3">
+                <label for="predicted_summary" class="form-label">Predicted Summary</label>
+                <input type="text" class="form-control" name="predicted_summary" value="{{textsum.predicted_summary}}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="score" class="form-label">Human Score</label>
+                <input type="number" class="form-control" name="human_score" value="{{textsum.human_score}}">
+            </div>
+            <div class="mb-3">
+                <label for="score" class="form-label">BERT Similarity Score</label>
+                <input type="number" class="form-control" name="human_score" value="{{textsum.cos_sim_score}}" readonly>
+            </div>
+            <button type="submit" class="btn btn-dark">Update</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+
+{% endblock body %}
+</body>
+
+</html>
