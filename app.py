@@ -76,7 +76,7 @@ def get_score(predicted_summary, actual_summary):
 
 
 # for predicting summary
-error_message = "Couldn't get the summary! Please try again!"
+error_message = "Couldn't get the summary! Please try again after a minute!"
 API_TOKEN = "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" 
 API_URL = "https://api-inference.huggingface.co/models/csebuetnlp/mT5_m2o_english_crossSum"
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
@@ -128,22 +128,46 @@ def logout():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
+    allTextSum = TextSum.query.all()
+    return render_template('dashboard.html', allTextSum=allTextSum)
+
+
+@app.route('/quick_summary', methods=['GET', 'POST'])
+@login_required
+def quick_summary():    
     if request.method == "POST":
         text = request.form['text']
-        if request.form['predicted_summary'] == '' or request.form['predicted_summary'] == error_message:
-            # request from get predicted summary button
-            predicted_summary = get_predicted_summary(text)
-            return render_template('add.html', text=text, predicted_summary=predicted_summary)
-        elif request.form['actual_summary'] != '' and not request.form['sim_score']:
-            # request from get bert similarity score button
-            predicted_summary = request.form['predicted_summary']
-            actual_summary = request.form['actual_summary']
-            sim_score = get_score(predicted_summary, actual_summary)
-            return render_template('add.html', text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, sim_score=sim_score)
+        if len(text) <= 10:
+            predicted_summary = text
         else:
-            # request from submit button
             predicted_summary = get_predicted_summary(text)
-            actual_summary = request.form['actual_summary']
+        return render_template('quick_summary.html', text=text, predicted_summary=predicted_summary)
+
+    return render_template('quick_summary.html')
+
+
+@app.route('/textsum', methods=['GET', 'POST'])
+@login_required
+def textsum():  
+    if request.method == "POST":
+        text = request.form['text']
+        actual_summary = request.form['actual_summary']
+        if len(text) <= 10:
+            predicted_summary = text
+        else:
+            predicted_summary = get_predicted_summary(text)
+
+        # request from get predicted summary button
+        if request.form['predicted_summary'] == '' or request.form['predicted_summary'] == error_message:
+            return render_template('add.html', text=text, predicted_summary=predicted_summary)
+
+        # request from get bert similarity score button
+        elif request.form['actual_summary'] != '' and not request.form['human_score']:
+            cos_sim_score = get_score(predicted_summary, actual_summary)
+            return render_template('add.html', text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score)
+    
+        # request from submit button
+        else:
             cos_sim_score = get_score(predicted_summary, actual_summary)
             human_score = request.form['human_score']
             textsum = TextSum(text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score, human_score=human_score)
@@ -151,13 +175,6 @@ def dashboard():
             db.session.commit()
             return redirect("/dashboard")   
 
-    allTextSum = TextSum.query.all()
-    return render_template('dashboard.html', allTextSum=allTextSum)
-
-
-@app.route('/textsum', methods=['GET', 'POST'])
-@login_required
-def textsum():    
     return render_template('add.html')
 
 
@@ -192,5 +209,5 @@ def delete(sno):
 
 
 if __name__ == "__main__": 
-    app.run(debug=True, host='192.168.133.181', port=8000)
+    app.run(debug=True, host='192.168.208.33', port=8000)
 

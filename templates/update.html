@@ -39,12 +39,18 @@
                 <input type="text" class="form-control" name="predicted_summary" value="{{textsum.predicted_summary}}" readonly>
             </div>
             <div class="mb-3">
-                <label for="score" class="form-label">Human Score</label>
-                <input type="number" class="form-control" name="human_score" value="{{textsum.human_score}}">
+                <label for="cos_sim_score" class="form-label">BERT Similarity Score</label>
+                <input type="number" class="form-control" name="cos_sim_score" value="{{textsum.cos_sim_score}}" readonly>
             </div>
-            <div class="mb-3">
-                <label for="score" class="form-label">BERT Similarity Score</label>
-                <input type="number" class="form-control" name="human_score" value="{{textsum.cos_sim_score}}" readonly>
+            <div class="mb-4">
+                <label for="human_score" class="form-label">Human Score</label>
+                <select class="form-control" name="human_score">
+                    <option value="{{textsum.human_score}}">{{textsum.human_score}} - previous score</option>
+                    <option value="0">0 - very bad</option>
+                    <option value="1">1 - bad</option>
+                    <option value="2">2 - ok</option>
+                    <option value="3">3 - good</option>
+                </select>
             </div>
             <button type="submit" class="btn btn-dark">Update</button>
         </form>

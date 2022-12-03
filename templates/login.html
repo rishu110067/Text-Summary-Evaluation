@@ -6,9 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
-        .full-page {
-            background-image: linear-gradient(rgba(221, 221, 221, 0.4), rgba(0, 0, 0, 0.4));
-        }
+        /* .full-page {
+            background-image: linear-gradient(rgba(221, 221, 221, 0.4), rgba(0, 0, 0, 0.4)), url(../static/Text-Summarization.jpg);
+        } */
+        /* body {
+            background-image: linear-gradient(rgba(221, 221, 221, 0.4), rgba(0, 0, 0, 0.4)), url(../static/Text-Summarization.jpg);
+            height: 120%;
+            background-repeat: no-repeat;
+            
+            background-size: cover;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+        } */
         .login {
             padding: 5rem 20rem;
         }
@@ -17,9 +27,9 @@
         }
     </style>
 </head>
-<body>
+<body class="bg">
     <div class="login">
-        <h1>Login</h1>
+        <h1>Log</h1>
 
         <form class="form" method="POST" action="">
             {{ form.hidden_tag() }}

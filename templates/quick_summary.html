@@ -30,38 +30,19 @@
 {% block body %}
 
     <div class="container">
-        <h2>Add Text Summarization</h2>
-        <form class="form" action="{{url_for('textsum')}}" method="POST">
+        <h2>Quick Summary</h2>
+        <form class="form" action="{{url_for('quick_summary')}}" method="POST">
             <div class="mb-3">
                 <label for="text" class="form-label">Text</label> 
                 <textarea class="form-control" rows="5" name="text">{{text}}</textarea>
                 <input type="hidden" class="form-control" name="text" value="textarea">
             </div>
-            <button type="submit" class="btn btn-dark btn-sm">Get Predicted Summary</button>
+            <button type="submit" class="btn btn-dark btn-sm" name="get_predicted_summary">Get Predicted Summary</button>
             <div class="mb-3">
                 <label for="predicted_summary" class="form-label">Predicted Summary</label>
                 <input type="text" class="form-control" name="predicted_summary" value="{{predicted_summary}}" readonly>
             </div>
-            <div class="mb-3">
-                <label for="actual_summary" class="form-label">Actual Summary</label>
-                <input type="text" class="form-control" name="actual_summary" value="{{actual_summary}}">
-            </div>
-            <button type="submit" class="btn btn-dark btn-sm">Get BERT Similarity Score</button>
-             <div class="mb-3">
-                <label for="cos_sim_score" class="form-label">BERT Similarity Score</label>
-                <input type="number" class="form-control" name="cos_sim_score" value="{{cos_sim_score}}" readonly>
-            </div>
-            <div class="mb-4">
-                <label for="human_score" class="form-label">Human Score</label>
-                <select class="form-control" name="human_score">
-                    <option value=""></option>
-                    <option value="0">0 - very bad</option>
-                    <option value="1">1 - bad</option>
-                    <option value="2">2 - ok</option>
-                    <option value="3">3 - good</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-dark">Submit</button>
+            <button type="submit" class="btn btn-dark" name="submit" formaction="{{url_for('dashboard')}}">Save</button>
         </form>
     </div>
 
