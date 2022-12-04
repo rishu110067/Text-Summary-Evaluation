@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluate</title>
+
+    <style>
+        h1{
+            padding: 1rem;
+            text-align: center;
+        }
+        h4{
+            padding-bottom: 3rem;
+            text-align: center;
+        }
+        .container{
+            padding-bottom: 10rem;
+        }
+    </style>
+</head>
+<body>
+{% extends 'base2.html' %}
+{% block body %}
+
+    <h1>Evaluate</h1>
+    <div class="container">
+        <h2>Text Summaries</h2> 
+        {% if allTextSum|length == 0%}
+            <div class="alert alert-dark" role="alert">
+                No record
+            </div>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">SNo</th>
+                        <th scope="col">Text</th>
+                        <th scope="col">Actual Summary</th>
+                        <th scope="col">Predicted Summary</th>
+                        <th scope="col">Human Evaluation Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for textsum in allTextSum %}
+                        <tr>
+                            <th scope="row">{{loop.index}}</th>
+                            <td>{{textsum.text}}</td>
+                            <td>{{textsum.actual_summary}}</td>
+                            <td>{{textsum.predicted_summary}}</td>
+                            <td>
+                                <form class="form" action="/evaluate/update/{{textsum.sno}}" method="POST"></form>
+                                    <select id="select1" class="form-control" name="human_score">
+                                        <option value="{{textsum.human_score}}">{{textsum.human_score}} - current score</option>
+                                        <option href="/evaluate/update/{{textsum.sno}}/0" value="0">0 - very bad</option>
+                                        <option value="1">1 - bad</option>
+                                        <option value="2">2 - ok</option>
+                                        <option value="3">3 - good</option>
+                                    </select>
+                                    yes
+                                    <!-- <button type="submit" class="btn btn-outline-dark btn-sm mx-2">Update</button> -->
+                                    <!-- <a href="/evaluate/update/{{textsum.sno}}/{{document.querySelector('#select1').value}}" type="button" class="btn btn-outline-dark btn-sm mx-2">Update</button> -->
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+{% endblock body %}
+</body>
+</html>

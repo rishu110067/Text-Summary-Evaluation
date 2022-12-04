@@ -143,6 +143,24 @@ def dashboard():
     return render_template('dashboard.html', allTextSum=allTextSum)
 
 
+@app.route('/evaluate', methods=['GET', 'POST'])
+@login_required
+def evaluate():
+    allTextSum = TextSum.query.all()
+    return render_template('evaluate.html', allTextSum=allTextSum)
+
+
+@app.route('/evaluate/update/<int:sno>', methods=['GET', 'POST'])
+@login_required
+def evaluate_update(sno):
+    textSum = TextSum.query.filter_by(sno=sno).first()
+    textSum.human_score = request.form['human_score']
+    db.session.add(textsum)
+    db.session.commit()
+    allTextSum = TextSum.query.all()
+    return render_template('evaluate.html', allTextSum=allTextSum)
+
+
 @app.route('/quick_summary', methods=['GET', 'POST'])
 @login_required
 def quick_summary():    
