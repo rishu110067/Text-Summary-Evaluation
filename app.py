@@ -10,8 +10,12 @@ from datetime import datetime
 # needed for BERT Similarity Score
 from sentence_transformers import SentenceTransformer, util
 
+# needed for summary model
+from transformers import pipeline
+
 # needed for API requests
 import requests
+
 
 app = Flask(__name__)
 app.app_context().push()
@@ -75,6 +79,14 @@ class QuickSummary(db.Model):
         return f"{self.sno} - {self.text}"
 
 
+# for predicting summary
+hub_model_id = "darshkk/t5-small-finetuned-xsum"
+summarizer = pipeline("summarization", model=hub_model_id)
+def get_predicted_summary(text):
+    output = summarizer(text)
+    summary = output[0]['summary_text']
+    return summary
+
 
 # for getting BERT score 
 st_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -86,18 +98,20 @@ def get_score(predicted_summary, actual_summary):
     return sc
 
 
-# for predicting summary
+# for predicting summary using API
 error_message = "Couldn't get the summary! Please try again after a minute!"
 API_TOKEN = "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" 
 API_URL = "https://api-inference.huggingface.co/models/csebuetnlp/mT5_m2o_english_crossSum"
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
-def get_predicted_summary(text):
+def get_predicted_summary_using_api(text):
     try: 
         response = requests.post(API_URL, headers=headers, json=text) # may get timeout error
         output = response.json()
         return output[0]['summary_text']
     except:
         return error_message
+
+
 
 
 @app.route('/')
