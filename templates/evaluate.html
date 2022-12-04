@@ -18,6 +18,12 @@
         .container{
             padding-bottom: 10rem;
         }
+        .btn-group-xs > .btn, .btn-xs {
+        padding: .25rem .4rem !important;
+        font-size: .875rem !important;
+        line-height: .5 !important;
+        border-radius: .2rem !important;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +46,7 @@
                         <th scope="col">Actual Summary</th>
                         <th scope="col">Predicted Summary</th>
                         <th scope="col">Human Evaluation Score</th>
+                        <th scope="col">Change Score</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,19 +56,12 @@
                             <td>{{textsum.text}}</td>
                             <td>{{textsum.actual_summary}}</td>
                             <td>{{textsum.predicted_summary}}</td>
-                            <td>
-                                <form class="form" action="/evaluate/update/{{textsum.sno}}" method="POST"></form>
-                                    <select id="select1" class="form-control" name="human_score">
-                                        <option value="{{textsum.human_score}}">{{textsum.human_score}} - current score</option>
-                                        <option href="/evaluate/update/{{textsum.sno}}/0" value="0">0 - very bad</option>
-                                        <option value="1">1 - bad</option>
-                                        <option value="2">2 - ok</option>
-                                        <option value="3">3 - good</option>
-                                    </select>
-                                    yes
-                                    <!-- <button type="submit" class="btn btn-outline-dark btn-sm mx-2">Update</button> -->
-                                    <!-- <a href="/evaluate/update/{{textsum.sno}}/{{document.querySelector('#select1').value}}" type="button" class="btn btn-outline-dark btn-sm mx-2">Update</button> -->
-                                </form>
+                            <td>{{textsum.human_score}}</td>
+                            <td style="width: 7rem">       
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/0">0 - very bad</a>
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/1">1 - bad</a> <br>
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/2">2 - ok</a> <br>
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/3">3 - good</a> <br>
                             </td>
                         </tr>
                     {% endfor %}

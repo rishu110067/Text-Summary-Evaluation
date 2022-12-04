@@ -150,12 +150,14 @@ def evaluate():
     return render_template('evaluate.html', allTextSum=allTextSum)
 
 
-@app.route('/evaluate/update/<int:sno>', methods=['GET', 'POST'])
+@app.route('/evaluate/update_score/<int:sno>/<int:human_score>', methods=['GET', 'POST'])
 @login_required
-def evaluate_update(sno):
+def evaluate_update_score(sno, human_score):
     textSum = TextSum.query.filter_by(sno=sno).first()
-    textSum.human_score = request.form['human_score']
-    db.session.add(textsum)
+    print("human_score = ", human_score)
+    print("sno = ", sno)
+    textSum.human_score = human_score
+    db.session.add(textSum)
     db.session.commit()
     allTextSum = TextSum.query.all()
     return render_template('evaluate.html', allTextSum=allTextSum)
