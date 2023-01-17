@@ -281,5 +281,5 @@ def delete(sno):
 
 
 if __name__ == "__main__": 
-    app.run(debug=True, host='192.168.208.33', port=8000)
+    app.run(debug=True, port=8000) # host='192.168.208.33'
 
