@@ -181,12 +181,16 @@ def evaluate():
 @app.route('/evaluate/update_score/<int:sno>/<int:human_score>', methods=['GET', 'POST'])
 @login_required
 def evaluate_update_score(sno, human_score):
+    # update textsum
     textSum = TextSum.query.filter_by(sno=sno).first()
-    print("human_score = ", human_score)
-    print("sno = ", sno)
     textSum.human_score = human_score
     db.session.add(textSum)
+    # update score
+    score = Score.query.filter_by(user_id=current_user.id, textsum_sno=sno).first()
+    score.score = human_score
+    db.session.add(score)
     db.session.commit()
+
     allTextSum = TextSum.query.all()
     return render_template('evaluate.html', allTextSum=allTextSum)
 
@@ -259,7 +263,6 @@ def textsum():
             human_score = request.form['human_score']
             textsum = TextSum(text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score, human_score=human_score)
             db.session.add(textsum)
-            db.session.commit()
             # saving score
             score = Score(user_id=current_user.id, textsum_sno=textsum.sno, score=human_score)
             db.session.add(score)
@@ -297,7 +300,6 @@ def delete(sno):
     # delete textsum
     textsum = TextSum.query.filter_by(sno=sno).first()
     db.session.delete(textsum)
-    db.session.commit()
     # delete score
     Score.query.filter_by(textsum_sno=sno).delete()
     db.session.commit()
