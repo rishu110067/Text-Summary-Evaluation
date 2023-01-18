@@ -277,16 +277,25 @@ def textsum():
 @login_required
 def update(sno):
     if request.method == "POST":
-        textsum = TextSum.query.filter_by(sno=sno).first()
         text = request.form['text']
         actual_summary = request.form['actual_summary']
         predicted_summary = get_predicted_summary(text)
+        human_score = request.form['human_score']
+        # updating textsum
+        textsum = TextSum.query.filter_by(sno=sno).first()
         textsum.text = text
         textsum.actual_summary = actual_summary
         textsum.predicted_summary = predicted_summary
         textsum.cos_sim_score = get_score(predicted_summary, actual_summary)
-        textsum.human_score = request.form['human_score']
+        textsum.human_score = human_score
         db.session.add(textsum)
+        # updating score
+        score = Score.query.filter_by(user_id=current_user.id, textsum_sno=sno).first()
+        if score:
+            score.score = human_score
+        else:
+            score = Score(user_id=current_user.id, textsum_sno=sno, score=human_score)
+        db.session.add(score)
         db.session.commit()
         return redirect("/dashboard")   
     
