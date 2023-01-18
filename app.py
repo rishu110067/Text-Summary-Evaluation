@@ -33,6 +33,9 @@ def load_user(user_id):
 login_manager.login_view = "login"
 
 
+
+# DATABASE CLASSES
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
@@ -63,7 +66,7 @@ class TextSum(db.Model):
     predicted_summary = db.Column(db.String(1000), nullable=False)
     actual_summary = db.Column(db.String(1000), nullable=False)
     cos_sim_score = db.Column(db.Float, nullable=True)
-    human_score = db.Column(db.Integer, nullable=True)
+    human_score = db.Column(db.Float, nullable=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     def __repr__(self) -> str:
         return f"{self.sno} - {self.text}"
@@ -78,6 +81,16 @@ class QuickSummary(db.Model):
     def __repr__(self) -> str:
         return f"{self.sno} - {self.text}"
 
+
+class Score(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    textsum_sno = db.Column(db.Integer, nullable=False)
+    score = db.Column(db.Float, nullable=False)
+
+
+
+# FUNCTIONS
 
 # for predicting summary
 hub_model_id = "darshkk/t5-small-finetuned-xsum"
@@ -113,6 +126,7 @@ def get_predicted_summary_using_api(text):
 
 
 
+# ROUTES
 
 @app.route('/')
 def home(): 
@@ -202,7 +216,7 @@ def save_quick_summary():
         predicted_summary = text
     else:
         predicted_summary = get_predicted_summary(text)
-    
+
     quick_summary = QuickSummary(text=text, predicted_summary=predicted_summary, user_id=current_user.id)
     db.session.add(quick_summary)
     db.session.commit()
@@ -240,12 +254,19 @@ def textsum():
     
         # request from submit button
         else:
+            # saving textsum
             cos_sim_score = get_score(predicted_summary, actual_summary)
             human_score = request.form['human_score']
             textsum = TextSum(text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score, human_score=human_score)
             db.session.add(textsum)
             db.session.commit()
+
+            # saving score
+            score = Score(user_id=current_user.id, textsum_sno=textsum.sno, score=human_score)
+            db.session.add(score)
+            db.session.commit()
             return redirect("/dashboard")   
+
 
     return render_template('add.html')
 
