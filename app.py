@@ -260,7 +260,6 @@ def textsum():
             textsum = TextSum(text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score, human_score=human_score)
             db.session.add(textsum)
             db.session.commit()
-
             # saving score
             score = Score(user_id=current_user.id, textsum_sno=textsum.sno, score=human_score)
             db.session.add(score)
@@ -295,8 +294,12 @@ def update(sno):
 @app.route('/textsum/delete/<int:sno>')
 @login_required
 def delete(sno):
+    # delete textsum
     textsum = TextSum.query.filter_by(sno=sno).first()
     db.session.delete(textsum)
+    db.session.commit()
+    # delete score
+    Score.query.filter_by(textsum_sno=sno).delete()
     db.session.commit()
     return redirect("/dashboard")
 
