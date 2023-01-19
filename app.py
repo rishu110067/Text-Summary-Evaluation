@@ -34,7 +34,7 @@ login_manager.login_view = "login"
 
 
 
-# DATABASE CLASSES
+# DATABASE CLASSES / MODELS
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -111,6 +111,18 @@ def get_score(predicted_summary, actual_summary):
     return sc
 
 
+# for getting Average Human Evaluation Score
+def get_avg_score(textsum_sno):
+    scores = Score.query.filter_by(textsum_sno=textsum_sno).all()
+    num = 0
+    den = 0
+    for score in scores:
+        num += score.score
+        den += 1
+    avg_score = num / den 
+    return avg_score
+
+
 # for predicting summary using API
 error_message = "Couldn't get the summary! Please try again after a minute!"
 API_TOKEN = "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" 
@@ -126,7 +138,7 @@ def get_predicted_summary_using_api(text):
 
 
 
-# ROUTES
+# ROUTES / APIS
 
 @app.route('/')
 def home(): 
@@ -175,23 +187,29 @@ def dashboard():
 @login_required
 def evaluate():
     allTextSum = TextSum.query.all()
+    for textsum in allTextSum:
+        score = Score.query.filter_by(textsum_sno=textsum.sno, user_id=current_user.id).first()
+        textsum.human_score = score.score
     return render_template('evaluate.html', allTextSum=allTextSum)
 
 
 @app.route('/evaluate/update_score/<int:sno>/<int:human_score>', methods=['GET', 'POST'])
 @login_required
 def evaluate_update_score(sno, human_score):
-    # update textsum
-    textSum = TextSum.query.filter_by(sno=sno).first()
-    textSum.human_score = human_score
-    db.session.add(textSum)
     # update score
     score = Score.query.filter_by(user_id=current_user.id, textsum_sno=sno).first()
     score.score = human_score
     db.session.add(score)
+    # updating textsum
+    textsum = TextSum.query.filter_by(sno=sno).first()
+    textsum.human_score = get_avg_score(sno)
+    db.session.add(textsum)
     db.session.commit()
-
+    # redirect to evaluate page
     allTextSum = TextSum.query.all()
+    for textsum in allTextSum:
+        score = Score.query.filter_by(textsum_sno=textsum.sno, user_id=current_user.id).first()
+        textsum.human_score = score.score
     return render_template('evaluate.html', allTextSum=allTextSum)
 
 
@@ -280,27 +298,31 @@ def update(sno):
         text = request.form['text']
         actual_summary = request.form['actual_summary']
         predicted_summary = get_predicted_summary(text)
-        human_score = request.form['human_score']
+        user_score = int(request.form['user_score'])
+
+        # updating score
+        score = Score.query.filter_by(user_id=current_user.id, textsum_sno=sno).first()
+        if score:
+            score.score = user_score
+        else:
+            score = Score(user_id=current_user.id, textsum_sno=sno, score=user_score)
+        db.session.add(score)
+
         # updating textsum
         textsum = TextSum.query.filter_by(sno=sno).first()
         textsum.text = text
         textsum.actual_summary = actual_summary
         textsum.predicted_summary = predicted_summary
         textsum.cos_sim_score = get_score(predicted_summary, actual_summary)
-        textsum.human_score = human_score
+        textsum.human_score = get_avg_score(sno)
         db.session.add(textsum)
-        # updating score
-        score = Score.query.filter_by(user_id=current_user.id, textsum_sno=sno).first()
-        if score:
-            score.score = human_score
-        else:
-            score = Score(user_id=current_user.id, textsum_sno=sno, score=human_score)
-        db.session.add(score)
         db.session.commit()
-        return redirect("/dashboard")   
+        return redirect("/dashboard")
     
     textsum = TextSum.query.filter_by(sno=sno).first()
-    return render_template('update.html', textsum=textsum)
+    score = Score.query.filter_by(textsum_sno=sno, user_id=current_user.id).first()
+    user_score = int(score.score)
+    return render_template('update.html', textsum=textsum, user_score=user_score)
 
 
 @app.route('/textsum/delete/<int:sno>')
