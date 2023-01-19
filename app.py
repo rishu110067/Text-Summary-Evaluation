@@ -119,7 +119,7 @@ def get_avg_score(textsum_sno):
     for score in scores:
         num += score.score
         den += 1
-    avg_score = num / den 
+    avg_score = int(num*100 / den) / 100
     return avg_score
 
 
@@ -189,7 +189,9 @@ def evaluate():
     allTextSum = TextSum.query.all()
     for textsum in allTextSum:
         score = Score.query.filter_by(textsum_sno=textsum.sno, user_id=current_user.id).first()
-        textsum.human_score = score.score
+        textsum.human_score = None
+        if score:
+            textsum.human_score = int(score.score)
     return render_template('evaluate.html', allTextSum=allTextSum)
 
 
@@ -198,19 +200,17 @@ def evaluate():
 def evaluate_update_score(sno, human_score):
     # update score
     score = Score.query.filter_by(user_id=current_user.id, textsum_sno=sno).first()
-    score.score = human_score
+    if score:
+        score.score = human_score
+    else:
+        score = Score(textsum_sno=sno, user_id=current_user.id, score=human_score)
     db.session.add(score)
     # updating textsum
     textsum = TextSum.query.filter_by(sno=sno).first()
     textsum.human_score = get_avg_score(sno)
     db.session.add(textsum)
     db.session.commit()
-    # redirect to evaluate page
-    allTextSum = TextSum.query.all()
-    for textsum in allTextSum:
-        score = Score.query.filter_by(textsum_sno=textsum.sno, user_id=current_user.id).first()
-        textsum.human_score = score.score
-    return render_template('evaluate.html', allTextSum=allTextSum)
+    return redirect('/evaluate')
 
 
 @app.route('/quick_summary', methods=['GET', 'POST'])
@@ -270,7 +270,7 @@ def textsum():
             return render_template('add.html', text=text, predicted_summary=predicted_summary)
 
         # request from get bert similarity score button
-        elif request.form['actual_summary'] != '' and not request.form['human_score']:
+        elif request.form['actual_summary'] != '' and not request.form['user_score']:
             cos_sim_score = get_score(predicted_summary, actual_summary)
             return render_template('add.html', text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score)
     
@@ -278,15 +278,15 @@ def textsum():
         else:
             # saving textsum
             cos_sim_score = get_score(predicted_summary, actual_summary)
-            human_score = request.form['human_score']
-            textsum = TextSum(text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score, human_score=human_score)
+            user_score = request.form['user_score']
+            textsum = TextSum(text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score, human_score=user_score)
             db.session.add(textsum)
+            db.session.commit()
             # saving score
-            score = Score(user_id=current_user.id, textsum_sno=textsum.sno, score=human_score)
+            score = Score(user_id=current_user.id, textsum_sno=textsum.sno, score=user_score)
             db.session.add(score)
             db.session.commit()
             return redirect("/dashboard")   
-
 
     return render_template('add.html')
 
@@ -298,9 +298,14 @@ def update(sno):
         text = request.form['text']
         actual_summary = request.form['actual_summary']
         predicted_summary = get_predicted_summary(text)
-        user_score = int(request.form['user_score'])
+        user_score = request.form['user_score']
+
+        # if user hasn't given the score then don't save it
+        if user_score == 'None':
+            return redirect("/dashboard")
 
         # updating score
+        user_score = int(user_score)
         score = Score.query.filter_by(user_id=current_user.id, textsum_sno=sno).first()
         if score:
             score.score = user_score
@@ -321,7 +326,9 @@ def update(sno):
     
     textsum = TextSum.query.filter_by(sno=sno).first()
     score = Score.query.filter_by(textsum_sno=sno, user_id=current_user.id).first()
-    user_score = int(score.score)
+    user_score = None
+    if score:
+        user_score = int(score.score)
     return render_template('update.html', textsum=textsum, user_score=user_score)
 
 
@@ -339,4 +346,3 @@ def delete(sno):
 
 if __name__ == "__main__": 
     app.run(debug=True, port=8000) # host='192.168.208.33'
-
