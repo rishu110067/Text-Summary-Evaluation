@@ -15,7 +15,7 @@
 	`$ virtualenv env --python=python3.8.3` 
 
 5. Activate the virtual Environment. On activation you can see (env) on left side of terminal. \
-    Run this command for mac: \
+    Run this command for mac and linux: \
 	`$ source env/bin/activate`  \
     Run this command for windows: \
     `$ env\Scripts\activate`
