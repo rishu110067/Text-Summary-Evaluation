@@ -7,14 +7,11 @@ from flask_login import UserMixin, LoginManager, login_user, login_required, log
 from flask_bcrypt import Bcrypt
 from datetime import datetime
 
-# needed for BERT Similarity Score
-from sentence_transformers import SentenceTransformer, util
-
 # needed for summary model
 from transformers import pipeline
 
-# needed for API requests
-import requests
+# needed for BERT Similarity Score
+from sentence_transformers import SentenceTransformer, util
 
 
 app = Flask(__name__)
@@ -121,20 +118,6 @@ def get_avg_score(textsum_sno):
         den += 1
     avg_score = int(num*100 / den) / 100
     return avg_score
-
-
-# for predicting summary using API
-error_message = "Couldn't get the summary! Please try again after a minute!"
-API_TOKEN = "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" 
-API_URL = "https://api-inference.huggingface.co/models/csebuetnlp/mT5_m2o_english_crossSum"
-headers = {"Authorization": f"Bearer {API_TOKEN}"}
-def get_predicted_summary_using_api(text):
-    try: 
-        response = requests.post(API_URL, headers=headers, json=text) # may get timeout error
-        output = response.json()
-        return output[0]['summary_text']
-    except:
-        return error_message
 
 
 
