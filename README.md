@@ -24,7 +24,7 @@
 	`$ pip install -r requirements.txt` \
    If anything fails to install, make sure that the virtual environment has python 3.8.3 version. 
    
-   If modules are not installing through Requirements file then just run `$ python app.py` and install anything that pops up.
+   If modules are not installing through Requirements file then just run `$ python app.py` and install the suggested modules.
 
 7. After this run the app \
     `$ python app.py`
