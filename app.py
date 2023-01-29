@@ -249,7 +249,7 @@ def textsum():
             predicted_summary = get_predicted_summary(text)
 
         # request from get predicted summary button
-        if request.form['predicted_summary'] == '' or request.form['predicted_summary'] == error_message:
+        if request.form['predicted_summary'] == '':
             return render_template('add.html', text=text, predicted_summary=predicted_summary)
 
         # request from get bert similarity score button
