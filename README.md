@@ -4,15 +4,15 @@
 
 1. Download the project repository (If using VSCode, you can clone the repository in VSCode)
 
-2. Open the repository in any IDE (VSCode preferred)
+2. Open the repository in any IDE (VSCode recommended)
 
 3. Make sure python and pip are installed \
     `$ python --version` \
     `$ pip --version` 
 
-4. Install and create virtual environment in the repository \
+4. Install and create virtual environment in the repository. Virtual environment with python 3.8.3 is recommended. \
 	`$ pip install virtualenv` \
-	`$ virtualenv env --python=python3.8.3` 
+	`$ virtualenv env` OR `$ virtualenv env --python=python3.8.3`
 
 5. Activate the virtual Environment. On activation you can see (env) on left side of terminal. \
     Run this command for mac and linux: \
@@ -22,12 +22,19 @@
 
 6. To installl all modules in Requirements File	\
 	`$ pip install -r requirements.txt` \
-   If anything fails to install, make sure that the virtual environment has python 3.8.3 version. 
    
-   If modules are not installing through Requirements file then just run `$ python app.py` and install the suggested modules.
+   If this doesn't work, install these modules one by one:
+   `$ pip install flask` \
+   `$ pip install flask_sqlalchemy` \
+   `$ pip install flask_wtf` \
+   `$ pip install flask_login` \
+   `$ pip install flask_bcrypt` \
+   `$ pip install transformers` \
+   `$ pip install sentence_transformers`
 
 7. After this run the app \
     `$ python app.py`
 
-8. Press (cnrl + C) to stop the app, and run this command to stop virtual environment \
+8. To stop the app press (cnrl + C). \
+   To deactivate the virtual environment, run this command: \
     `$ deactivate`
