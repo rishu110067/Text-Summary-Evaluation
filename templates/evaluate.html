@@ -57,11 +57,13 @@
                             <td>{{textsum.actual_summary}}</td>
                             <td>{{textsum.predicted_summary}}</td>
                             <td>{{textsum.human_score}}</td>
-                            <td style="width: 7rem">       
-                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/0">0 - very bad</a>
-                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/1">1 - bad</a> <br>
-                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/2">2 - ok</a> <br>
-                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/3">3 - good</a> <br>
+                            <td style="width: 10rem">       
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/0">0 - extremely bad</a>
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/1">1 - very bad</a> <br>
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/2">2 - bad</a> <br>
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/3">3 - ok</a> <br>
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/4">4 - good</a> <br>
+                                <a type="button" class="btn btn-outline-dark btn-xs mb-2" href="/evaluate/update_score/{{textsum.sno}}/5">5 - very good</a> <br>
                             </td>
                         </tr>
                     {% endfor %}
