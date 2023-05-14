@@ -30,7 +30,8 @@
    `$ pip install flask_login` \
    `$ pip install flask_bcrypt` \
    `$ pip install transformers` \
-   `$ pip install sentence_transformers`
+   `$ pip install sentence_transformers` \
+   `$ pip install torchmetrics`
 
 7. After this run the app \
     `$ python app.py`
