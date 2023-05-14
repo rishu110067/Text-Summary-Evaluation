@@ -36,6 +36,6 @@
 7. After this run the app \
     `$ python app.py`
 
-8. To stop the app press (cnrl + C). \
+8. To stop the app press (ctrl + C). \
    To deactivate the virtual environment, run this command: \
     `$ deactivate`
