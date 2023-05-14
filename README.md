@@ -15,13 +15,13 @@
 	`$ virtualenv env` OR `$ virtualenv env --python=python3.8.3`
 
 5. Activate the virtual Environment. On activation you can see (env) on left side of terminal. \
-    Run this command for mac and linux: \
+    Run this command for mac or linux OS: \
 	`$ source env/bin/activate`  \
-    Run this command for windows: \
+    Run this command for windows OS: \
     `$ env\Scripts\activate`
 
 6. To installl all modules in Requirements File	\
-	`$ pip install -r requirements.txt` \
+	`$ pip install -r requirements.txt` 
    
    If this doesn't work, install these modules one by one: \
    `$ pip install flask` \
