@@ -23,7 +23,7 @@
 6. To installl all modules in Requirements File	\
 	`$ pip install -r requirements.txt` \
    
-   If this doesn't work, install these modules one by one:
+   If this doesn't work, install these modules one by one: \
    `$ pip install flask` \
    `$ pip install flask_sqlalchemy` \
    `$ pip install flask_wtf` \
