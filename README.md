@@ -1,4 +1,4 @@
-# Text-Summary-Evaluation
+# Text Summararization and Semantic Evaluation
 
 ## Steps to run the project on local
 
