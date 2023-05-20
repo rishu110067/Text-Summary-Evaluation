@@ -13,6 +13,17 @@ from transformers import pipeline
 # needed for BERT Similarity Score
 from sentence_transformers import SentenceTransformer, util
 
+# needed for TER score
+from torchmetrics import TranslationEditRate
+
+# needed for METEOR Score
+import nltk
+nltk.download('omw-1.4')
+nltk.download('punkt')
+nltk.download('wordnet')
+from nltk.translate import meteor
+from nltk import word_tokenize
+
 
 app = Flask(__name__)
 app.app_context().push()
@@ -63,6 +74,8 @@ class TextSum(db.Model):
     predicted_summary = db.Column(db.String(1000), nullable=False)
     actual_summary = db.Column(db.String(1000), nullable=False)
     cos_sim_score = db.Column(db.Float, nullable=True)
+    ter_score = db.Column(db.Float, nullable=True)
+    meteor_score = db.Column(db.Float, nullable=True)
     human_score = db.Column(db.Float, nullable=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     def __repr__(self) -> str:
@@ -100,12 +113,27 @@ def get_predicted_summary(text):
 
 # for getting BERT score 
 st_model = SentenceTransformer('all-MiniLM-L6-v2')
-def get_score(predicted_summary, actual_summary):
+def get_score(predicted_summary, gold_summary):
     pred_embedding = st_model.encode([predicted_summary])
-    gt_embedding = st_model.encode([actual_summary])
+    gt_embedding = st_model.encode([gold_summary])
     sim = util.cos_sim(pred_embedding, gt_embedding)
     sc = format(sim[0][0], '.4')
     return sc
+
+
+# for getting TER score
+ter = TranslationEditRate()
+def get_ter_score(predicted_summary, gold_summary):
+    ter_score = (float)(ter(predicted_summary, gold_summary))
+    ter_score = format(ter_score, '.4')
+    return ter_score
+
+
+# for getting METEOR score
+def get_meteor_score(predicted_summary, gold_summary):
+    meteor_score = meteor([word_tokenize(gold_summary)], word_tokenize(predicted_summary))
+    meteor_score = format(meteor_score, '.4')
+    return meteor_score
 
 
 # for getting Average Human Evaluation Score
@@ -255,14 +283,18 @@ def textsum():
         # request from get bert similarity score button
         elif request.form['actual_summary'] != '' and not request.form['user_score']:
             cos_sim_score = get_score(predicted_summary, actual_summary)
-            return render_template('add.html', text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score)
+            ter_score = get_ter_score(predicted_summary, actual_summary)
+            meteor_score = get_meteor_score(predicted_summary, actual_summary)
+            return render_template('add.html', text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score, ter_score=ter_score, meteor_score=meteor_score)
     
         # request from submit button
         else:
             # saving textsum
             cos_sim_score = get_score(predicted_summary, actual_summary)
+            ter_score = get_ter_score(predicted_summary, actual_summary)
+            meteor_score = get_meteor_score(predicted_summary, actual_summary)
             user_score = request.form['user_score']
-            textsum = TextSum(text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score, human_score=user_score)
+            textsum = TextSum(text=text, predicted_summary=predicted_summary, actual_summary=actual_summary, cos_sim_score=cos_sim_score, human_score=user_score, ter_score=ter_score, meteor_score=meteor_score)
             db.session.add(textsum)
             db.session.commit()
             # saving score
@@ -302,6 +334,8 @@ def update(sno):
         textsum.actual_summary = actual_summary
         textsum.predicted_summary = predicted_summary
         textsum.cos_sim_score = get_score(predicted_summary, actual_summary)
+        textsum.ter_score = get_ter_score(predicted_summary, actual_summary)
+        textsum.meteor_score = get_meteor_score(predicted_summary, actual_summary)
         textsum.human_score = get_avg_score(sno)
         db.session.add(textsum)
         db.session.commit()

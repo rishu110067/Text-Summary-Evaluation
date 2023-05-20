@@ -41,8 +41,10 @@
                         <th scope="col">Text</th>
                         <th scope="col">Actual Summary</th>
                         <th scope="col">Predicted Summary</th>
-                        <th scope="col">BERT Similarity Score</th>
                         <th scope="col">Average Human Evaluation Score</th>
+                        <th scope="col">BERT Similarity Score</th>
+                        <th scope="col">TER Score</th>
+                        <th scope="col">METEOR Score</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,8 +54,10 @@
                             <td>{{textsum.text}}</td>
                             <td>{{textsum.actual_summary}}</td>
                             <td>{{textsum.predicted_summary}}</td>
-                            <td>{{textsum.cos_sim_score}}</td>
                             <td>{{textsum.human_score}}</td>
+                            <td>{{textsum.cos_sim_score}}</td>
+                            <td>{{textsum.ter_score}}</td>
+                            <td>{{textsum.meteor_score}}</td>
                             <td>
                                 <a href="/textsum/update/{{textsum.sno}}" type="button" class="btn btn-outline-dark btn-sm mx-2">Update</button>
                                 <a href="/textsum/delete/{{textsum.sno}}" type="button" class="btn btn-outline-dark btn-sm mx-2">Delete</button>
